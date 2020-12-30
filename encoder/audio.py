@@ -18,17 +18,6 @@ int16_max = (2 ** 15) - 1
 
 def preprocess_wav(fpath_or_wav: Union[str, Path, np.ndarray],
                    source_sr: Optional[int] = None):
-    """
-    Applies the preprocessing operations used in training the Speaker Encoder to a waveform 
-    either on disk or in memory. The waveform will be resampled to match the data hyperparameters.
-
-    :param fpath_or_wav: either a filepath to an audio file (many extensions are supported, not 
-    just .wav), either the waveform as a numpy array of floats.
-    :param source_sr: if passing an audio waveform, the sampling rate of the waveform before 
-    preprocessing. After preprocessing, the waveform's sampling rate will match the data 
-    hyperparameters. If passing a filepath, the sampling rate will be automatically detected and 
-    this argument will be ignored.
-    """
     # Load the wav from disk if needed
     if isinstance(fpath_or_wav, str) or isinstance(fpath_or_wav, Path):
         wav, source_sr = librosa.load(str(fpath_or_wav), sr=None)
@@ -48,10 +37,7 @@ def preprocess_wav(fpath_or_wav: Union[str, Path, np.ndarray],
 
 
 def wav_to_mel_spectrogram(wav):
-    """
-    Derives a mel spectrogram ready to be used by the encoder from a preprocessed audio waveform.
-    Note: this not a log-mel spectrogram.
-    """
+
     frames = librosa.feature.melspectrogram(
         wav,
         sampling_rate,
@@ -63,13 +49,7 @@ def wav_to_mel_spectrogram(wav):
 
 
 def trim_long_silences(wav):
-    """
-    Ensures that segments without voice in the waveform remain no longer than a 
-    threshold determined by the VAD parameters in params.py.
 
-    :param wav: the raw waveform as a numpy array of floats 
-    :return: the same waveform with silences trimmed away (length <= original wav length)
-    """
     # Compute the voice detection window size
     samples_per_window = (vad_window_length * sampling_rate) // 1000
     
